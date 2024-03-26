@@ -62,6 +62,8 @@ func (r *Router) bind(handler *backend.Handler) {
 			currency.GET("/balance", handler.CurrencyHandler().BalanceOf)
 			currency.GET("/name", handler.CurrencyHandler().Name)
 			currency.GET("/symbol", handler.CurrencyHandler().Symbol)
+
+			currency.POST("/transfer", handler.CurrencyHandler().Transfer)
 		}
 
 		sign := chains.Group("/sign")

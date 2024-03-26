@@ -1,6 +1,9 @@
 package backend
 
-import "github.com/micah-minsoeg-lee/common-wallet-api/node"
+import (
+	"github.com/micah-minsoeg-lee/common-wallet-api/abi"
+	"github.com/micah-minsoeg-lee/common-wallet-api/node"
+)
 
 type Handler struct {
 	currencyHandler    *currencyHandler
@@ -10,8 +13,13 @@ type Handler struct {
 }
 
 func NewHandler(nodes node.Nodes) (*Handler, error) {
+	// get erc20 token abi
+	tokenAbi, err := abi.GetErc20Abi()
+	if err != nil {
+		return nil, err
+	}
 	return &Handler{
-		currencyHandler:    newCurrencyHandler(nodes),
+		currencyHandler:    newCurrencyHandler(nodes, tokenAbi),
 		transactionHandler: newTransactionHandler(nodes),
 		signHandler:        newSignHandler(nodes),
 		blockHandler:       newBlockHandler(nodes),
