@@ -32,6 +32,14 @@ func CallContract(ctx context.Context, node *node.Node, callMsg ethereum.CallMsg
 	return node.Client().CallContract(ctx, callMsg, blockNumber)
 }
 
+func GetNonce(ctx context.Context, node *node.Node, user common.Address, blockNumber *big.Int, isPendingNonce bool) (uint64, error) {
+	if isPendingNonce {
+		return node.Client().PendingNonceAt(ctx, user)
+	} else {
+		return node.Client().NonceAt(ctx, user, blockNumber)
+	}
+}
+
 func GetBalance(ctx context.Context, node *node.Node, currency, user common.Address, blockNumber *big.Int, tokenAbi *abi.ABI) (*big.Int, error) {
 	if currency == (common.Address{}) {
 		// coin

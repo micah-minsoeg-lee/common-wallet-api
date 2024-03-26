@@ -35,13 +35,57 @@ func (c *currencyHandler) BalanceOf(ctx *gin.Context) {
 
 	balance, err := api.GetBalance(context.Background(), c.nodes[chainId], currency, user, nil, c.erc20Abi)
 	if err != nil {
-		ResponseFail(ctx, http.StatusBadRequest, newFailResponse(err, errCode_networkingNodeFail, errMsg_invalidParams))
+		ResponseFail(ctx, http.StatusBadRequest, newFailResponse(err, errCode_networkingNodeFail, errMsg_networkingNodeFail))
 		return
 	}
 
 	ResponseSuccess(ctx, balance)
 }
 
-func (c *currencyHandler) Name(ctx *gin.Context)     {}
-func (c *currencyHandler) Symbol(ctx *gin.Context)   {}
-func (c *currencyHandler) Transfer(ctx *gin.Context) {}
+func (c *currencyHandler) Name(ctx *gin.Context) {
+	chainId, err := strconv.Atoi(ctx.Param(param_chainId))
+	if err != nil {
+		ResponseFail(ctx, http.StatusBadRequest, newFailResponse(err, errCode_invalidParams, errMsg_invalidParams))
+		return
+	}
+
+	currency := common.HexToAddress(ctx.Param(param_currency))
+	if currency == (common.Address{}) {
+		ResponseSuccess(ctx, c.nodes[chainId].Info().Name())
+		return
+	}
+
+	name, err := api.GetName(context.Background(), c.nodes[chainId], currency, c.erc20Abi)
+	if err != nil {
+		ResponseFail(ctx, http.StatusBadRequest, newFailResponse(err, errCode_networkingNodeFail, errMsg_networkingNodeFail))
+		return
+	}
+
+	ResponseSuccess(ctx, name)
+}
+
+func (c *currencyHandler) Symbol(ctx *gin.Context) {
+	chainId, err := strconv.Atoi(ctx.Param(param_chainId))
+	if err != nil {
+		ResponseFail(ctx, http.StatusBadRequest, newFailResponse(err, errCode_invalidParams, errMsg_invalidParams))
+		return
+	}
+
+	currency := common.HexToAddress(ctx.Param(param_currency))
+	if currency == (common.Address{}) {
+		ResponseSuccess(ctx, c.nodes[chainId].Info().Symbol())
+		return
+	}
+
+	name, err := api.GetSymbol(context.Background(), c.nodes[chainId], currency, c.erc20Abi)
+	if err != nil {
+		ResponseFail(ctx, http.StatusBadRequest, newFailResponse(err, errCode_networkingNodeFail, errMsg_networkingNodeFail))
+		return
+	}
+
+	ResponseSuccess(ctx, name)
+}
+
+func (c *currencyHandler) Transfer(ctx *gin.Context) {
+
+}

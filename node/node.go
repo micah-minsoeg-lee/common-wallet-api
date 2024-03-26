@@ -9,9 +9,10 @@ import (
 
 type Node struct {
 	client *ethclient.Client
+	info   *config.Currency
 }
 
-func NewNode(path string) (*Node, error) {
+func NewNode(path string, info *config.Currency) (*Node, error) {
 	n := new(Node)
 	var err error
 	if n.client, err = ethclient.DialContext(context.Background(), path); err != nil {
@@ -25,13 +26,17 @@ func (n *Node) Client() *ethclient.Client {
 	return n.client
 }
 
+func (n *Node) Info() *config.Currency {
+	return n.info
+}
+
 type Nodes map[int]*Node
 
 func NewNodes(cfg *config.Config) (Nodes, error) {
 	nodes := make(Nodes)
 
 	for key, info := range cfg.Nodes {
-		node, err := NewNode(info.Url())
+		node, err := NewNode(info.Url(), info.CurrencyInfo())
 		if err != nil {
 			return nil, err
 		}

@@ -1,6 +1,10 @@
 package backend
 
 import (
+	"math/big"
+
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/micah-minsoeg-lee/common-wallet-api/abi"
 	"github.com/micah-minsoeg-lee/common-wallet-api/node"
 )
@@ -34,4 +38,17 @@ func (h *Handler) TransactionHandler() *transactionHandler {
 
 func (h *Handler) BlockHandler() *blockHandler {
 	return h.blockHandler
+}
+
+func makeUnsignedTx(to common.Address, chainId, value *big.Int, nonce, gas uint64, gasInfo gasPriceInfo, data []byte) *types.Transaction {
+	// TODO: upgrade to more details
+	return types.NewTx(&types.DynamicFeeTx{
+		ChainID:   chainId,
+		Nonce:     nonce,
+		GasTipCap: gasInfo.tipCap,
+		GasFeeCap: gasInfo.feeCap,
+		Gas:       gas,
+		Value:     value,
+		Data:      data,
+	})
 }

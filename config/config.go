@@ -6,23 +6,23 @@ import (
 	"github.com/pelletier/go-toml/v2"
 )
 
-type currency struct {
+type Currency struct {
 	name   string
 	symbol string
 }
 
-func (c *currency) Name() string {
+func (c *Currency) Name() string {
 	return c.name
 }
 
-func (c *currency) Symbol() string {
+func (c *Currency) Symbol() string {
 	return c.symbol
 }
 
 type nodeInfo struct {
 	url          string
 	name         string
-	currencyInfo currency
+	currencyInfo *Currency
 }
 
 func (n *nodeInfo) Url() string {
@@ -33,7 +33,7 @@ func (n *nodeInfo) Name() string {
 	return n.name
 }
 
-func (n *nodeInfo) CurrencyInfo() currency {
+func (n *nodeInfo) CurrencyInfo() *Currency {
 	return n.currencyInfo
 }
 

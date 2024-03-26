@@ -1,6 +1,9 @@
 package backend
 
-import "fmt"
+import (
+	"fmt"
+	"math/big"
+)
 
 // def params name
 const (
@@ -13,13 +16,18 @@ const (
 const (
 	// TODO: def custom err code
 	errCode_invalidParams      = -1000
+	errCode_invalidRequest     = -1001
 	errCode_networkingNodeFail = -2000
 )
 
 // def error response msg
 const (
 	errMsg_invalidParams      = "invalid params"
+	errMsg_invalidRequest     = "invalid request"
 	errMsg_networkingNodeFail = "networking node fail"
+
+	errMsg_invalidFeeCap = "invalid feecap"
+	errMsg_invalidTipCap = "invalid tipcap"
 )
 
 type failResponse struct {
@@ -32,6 +40,43 @@ func newFailResponse(err error, errCode int, msg string) failResponse {
 		errCode: errCode,
 		message: fmt.Sprintf("%v: %v", msg, err),
 	}
+}
+
+type currencyTransferRequest struct {
+	Currency string `json:"currency,omitempty"`
+	To       string `json:"to"`
+	Value    string `json:"value"`
+}
+
+type gasPriceInfoSet struct {
+	FeeCap string `json:"feecap,maxFeePerGas,gasPrice"`
+	TipCap string `json:"tipcap,maxPriorityFeePerGas,omitempty"`
+}
+
+type gasPriceInfo struct {
+	feeCap *big.Int
+	tipCap *big.Int
+}
+
+func convertInfoSetToInfo(set gasPriceInfoSet) (gasPriceInfo, error) {
+	if set.TipCap == "" {
+		set.TipCap = set.FeeCap
+	}
+
+	feeCap, ok := new(big.Int).SetString(set.FeeCap, 16)
+	if !ok {
+		return gasPriceInfo{}, fmt.Errorf(errMsg_invalidFeeCap)
+	}
+
+	tipCap, ok := new(big.Int).SetString(set.TipCap, 16)
+	if !ok {
+		return gasPriceInfo{}, fmt.Errorf(errMsg_invalidTipCap)
+	}
+
+	return gasPriceInfo{
+		feeCap: feeCap,
+		tipCap: tipCap,
+	}, nil
 }
 
 type msgSignPrefix string

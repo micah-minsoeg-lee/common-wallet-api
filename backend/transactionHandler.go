@@ -1,6 +1,9 @@
 package backend
 
 import (
+	"net/http"
+
+	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/gin-gonic/gin"
 	"github.com/micah-minsoeg-lee/common-wallet-api/node"
 )
@@ -15,6 +18,18 @@ func newTransactionHandler(nodes node.Nodes) *transactionHandler {
 	}
 }
 
-func (t *transactionHandler) MakeUnsignedTx(ctx *gin.Context) {}
+func (t *transactionHandler) MakeUnsignedTx(ctx *gin.Context) {
+	req := new(currencyTransferRequest)
 
-func (t *transactionHandler) SendTx(ctx *gin.Context) {}
+	err := ctx.ShouldBindJSON(&req)
+	if err != nil {
+		ResponseFail(ctx, http.StatusBadRequest, newFailResponse(err, errCode_invalidRequest, errMsg_invalidRequest))
+		return
+	}
+
+	ResponseSuccess(ctx, types.NewTx(&types.DynamicFeeTx{}))
+}
+
+func (t *transactionHandler) SendTx(ctx *gin.Context) {
+
+}
