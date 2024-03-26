@@ -57,23 +57,18 @@ func (r *Router) bind(handler *backend.Handler) {
 			block.GET("/number", handler.BlockHandler().BlockNumber)
 		}
 
-		currency := chains.Group("/currency")
+		currency := chains.Group("/currency/:currencyAddress")
 		{
-			currency.GET("/balance", handler.CurrencyHandler().BalanceOf)
+			currency.GET("/balance/:userAddress", handler.CurrencyHandler().BalanceOf)
 			currency.GET("/name", handler.CurrencyHandler().Name)
 			currency.GET("/symbol", handler.CurrencyHandler().Symbol)
 
 			currency.POST("/transfer", handler.CurrencyHandler().Transfer)
 		}
 
-		sign := chains.Group("/sign")
-		{
-			sign.POST("/signTx", handler.SignHandler().SignTx)
-			sign.POST("/signMsg", handler.SignHandler().SignMsg)
-		}
-
 		tx := chains.Group("/tx")
 		{
+			tx.POST("/makeTx", handler.TransactionHandler().MakeUnsignedTx)
 			tx.POST("/sendTx", handler.TransactionHandler().SendTx)
 		}
 	}

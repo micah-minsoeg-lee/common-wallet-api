@@ -15,4 +15,6 @@ func newTransactionHandler(nodes node.Nodes) *transactionHandler {
 	}
 }
 
+func (t *transactionHandler) MakeUnsignedTx(ctx *gin.Context) {}
+
 func (t *transactionHandler) SendTx(ctx *gin.Context) {}
